@@ -250,8 +250,8 @@ public class BuyWithCreditTest {
     void shouldWarnWhenMonthIsNegative() {
         var page = open("http://localhost:8080", ShopPage.class);
         int orderEntityCountExpected = getOrderEntityCount() + 1;
-        int paymentEntityCountExpected = getPaymentEntityCount() + 1;
-        int creditRequestEntityCountExpected = getCreditRequestEntityCount();
+        int paymentEntityCountExpected = getPaymentEntityCount();
+        int creditRequestEntityCountExpected = getCreditRequestEntityCount() + 1;
         Card card = CardUtil.getFirstCard();
         String expectedMonth = card.getMonth();
         String negativeMonth = "-" + card.getMonth();
