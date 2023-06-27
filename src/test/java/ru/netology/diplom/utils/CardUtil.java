@@ -53,6 +53,9 @@ public class CardUtil {
     private static LocalDate getLastYearDate() {
         return LocalDate.now().minusYears(1);
     }
+    private static LocalDate getNextYearDate() {
+        return LocalDate.now().plusYears(1);
+    }
 
     public static Card getFirstCardWithNumber(String number) {
         Card card = getFirstCard();
@@ -88,7 +91,7 @@ public class CardUtil {
         LocalDate lastMonth = getLastMonthDate();
         Card card = getFirstCard();
         card.setMonth(getMonth(lastMonth.getMonthValue()));
-        card.setYear(getMonth(lastMonth.getYear()));
+        card.setYear(getYear(lastMonth.getYear()));
         return card;
     }
 
@@ -96,7 +99,14 @@ public class CardUtil {
         LocalDate lastMonth = getLastYearDate();
         Card card = getFirstCard();
         card.setMonth(getMonth(lastMonth.getMonthValue()));
-        card.setYear(getMonth(lastMonth.getYear()));
+        card.setYear(getYear(lastMonth.getYear()));
+        return card;
+    }
+
+    public static Card getFirstCardWithNextYear() {
+        LocalDate lastMonth = getNextYearDate();
+        Card card = getFirstCard();
+        card.setYear(getYear(lastMonth.getYear()));
         return card;
     }
 }
