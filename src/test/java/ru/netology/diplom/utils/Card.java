@@ -1,14 +1,12 @@
 package ru.netology.diplom.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class Card {
-    private String number;
-    private String month;
-    private String year;
-    private String holder;
-    private String code;
+    String number;
+    String month;
+    String year;
+    String holder;
+    String code;
 }
