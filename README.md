@@ -1,30 +1,25 @@
-Подготовка браузера
-1. Убедиться, что в системе установлен браузер Google Chrome. При отсутствии установить.
+## Порядок запуска автотестов
+Перед запуском тестов необходимо установить следующее ПО:
+- Java 11 или выше;
+- IntelliJ Idea
+- Docker
 
-Подготовка базы данных
-1. Запустить сервер базы данных mysql или postgresql
-2. На сервере базы данных создать пользователя <b>'app'</b> с паролем <b>'pass'</b>
-3. Создать (схему) с именем <b>'app'</b>
+Команды выполняются в терминале в корневой директории проекта.
+### Подготовка окружения
+1. Запустить базы данных и gate-simulator командой `docker-compose up -d`. 
+Первый запуск может занять продолжительное время. Необходимо подождать, когда статус контейнеров postgres, mysql и node-app станет "Started"
+2. Запустить SUT:
+    - для проверки БД mysql: `java -jar .\artifacts\aqa-shop.jar`
+    - для проверки БД postgres: `java "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app" -jar .\artifacts\aqa-shop.jar`
 
-Подготовка симулятора
-1. Установить программу npm
-2. Открыть новое окно терминала
-3. Перейти в директорию gate-simulator
-4. Запустить симулятор командой <b>npm start</b>
+### Запуск тестов
+Выполнить команду:
+- для проверки БД mysql: `.\gradlew clean test`
+- для проверки БД postgres: `.\gradlew clean test "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app"`
 
-Подготовка приложения
-1. В файле настроек artifacts/application.properties раскомментировать строку с настройками проверяемой базы данных 
-``#spring.datasource.url=jdbc:mysql://localhost:3306/app`` - для mysql<br> 
-``#spring.datasource.url=jdbc:postgresql://localhost:5432/app`` - для postgresql
-2. Открыть новое окно терминала
-3. Перейти в директорию <b>artifacts</b>
-4. Запустить тестируемое приложение командой  <b>java -jar .\aqa-shop.jar</b>
+### Получение отчёта о тестировании
+Выполнить команду: `.\gradlew allureServe`
 
-Запуск тестов
-1. Открыть проект в IDE
-2. Нажать 2 раза подряд клавишу Ctrl
-3. В появившуюся строку ввести команду <b>gradle clean test</b>
-4. Дождаться завершения всех тестов
-
-Просмотр отчёта о тестировании
-1. Открыть в браузере файл 'build/reports/tests/test/index.html'
+### Завершение работы
+1. Завершить работу SUT. Для этого в терминале нажать Ctrl+C
+2. Удалить базы данных и gate-simulator командой `docker-compose down`
