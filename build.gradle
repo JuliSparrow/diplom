@@ -31,6 +31,7 @@ dependencies {
     implementation 'org.springframework:spring-context:5.3.27'
     testImplementation 'org.projectlombok:lombok:1.18.26'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
 test {

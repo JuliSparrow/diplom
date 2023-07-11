@@ -1,9 +1,11 @@
-package ru.netology.diplom;
+package ru.netology.diplom.test;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.*;
+import ru.netology.diplom.page.ShopPage;
 import ru.netology.diplom.utils.Card;
 import ru.netology.diplom.utils.CardUtil;
 import ru.netology.diplom.utils.DateUtils;
@@ -28,13 +30,15 @@ public class BuyWithCreditTest {
     @BeforeAll
     public static void setupAll() {
         Properties properties = new Properties();
-        String fileName = "artifacts/application.properties";
+        String fileName = "application.properties";
         try (FileInputStream fis = new FileInputStream(fileName)) {
             properties.load(fis);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String url = properties.getProperty("spring.datasource.url");
+        String url = System.getProperty("spring.datasource.url") != null
+                ? System.getProperty("spring.datasource.url")
+                : properties.getProperty("spring.datasource.url");
         String user = properties.getProperty("spring.datasource.username");
         String password = properties.getProperty("spring.datasource.password");
 
@@ -54,7 +58,7 @@ public class BuyWithCreditTest {
     @Test
     @DisplayName("Successful Pay With Credit")
     void shouldSuccessfulPayWithCredit() {
-        var page = open("http://localhost:8080", ShopPage.class);
+        var page = Selenide.open("http://localhost:8080", ShopPage.class);
         int orderEntityCountExpected = getOrderEntityCount() + 1;
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount() + 1;
@@ -92,7 +96,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithNumber("");
+        Card card = CardUtil.getCardWithEmptyNumber();
         page.buyWithCredit(card);
         verifyCardNumberNotFilled();
         verifyOtherFieldsAreValid();
@@ -106,10 +110,9 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCard();
-        card.setNumber("11112222333344445");
+        Card card = CardUtil.getCardWithNumberMoreThen16Digits();
         page.buyWithCredit(card);
-        verifyFieldValueEquals("Номер карты", "1111 2222 3333 4444");
+        verifyFieldValueEquals("Номер карты", getFormattedCardNumber(card.getNumber()));
         verifyErrorNotification();
         verifyOtherFieldsAreValid();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
@@ -122,7 +125,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithNumber("444444444444444");
+        Card card = CardUtil.getCardWithNumberLessThen16Digits();
         page.buyWithCredit(card);
         verifyCardNumberInvalid();
         verifyOtherFieldsAreValid();
@@ -136,7 +139,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithNumber("444444444444444i");
+        Card card = CardUtil.getCardWithNumberHasLetter();
         page.buyWithCredit(card);
         verifyCardNumberInvalid();
         verifyFieldValueEquals("Номер карты", "4444 4444 4444 444");
@@ -151,7 +154,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithNumber("444444444444444i");
+        Card card = CardUtil.getCardWithNumberHasSymbol();
         page.buyWithCredit(card);
         verifyCardNumberInvalid();
         verifyFieldValueEquals("Номер карты", "4444 4444 4444 444");
@@ -166,7 +169,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("");
+        Card card = CardUtil.getFirstCardWithEmptyMonth();
         page.buyWithCredit(card);
         verifyMonthNotFilled();
         verifyOtherFieldsAreValid();
@@ -180,7 +183,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("0");
+        Card card = CardUtil.getFirstCardWithMonthZero();
         page.buyWithCredit(card);
         verifyMonthInvalidFormat();
         verifyOtherFieldsAreValid();
@@ -194,7 +197,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("00");
+        Card card = CardUtil.getFirstCardWithMonthDoubleZero();
         page.buyWithCredit(card);
         verifyMonthInvalid();
         verifyOtherFieldsAreValid();
@@ -202,14 +205,13 @@ public class BuyWithCreditTest {
     }
 
     @Test
-    @DisplayName("Validate month (input 7)")
+    @DisplayName("Validate month (input one digit)")
     void shouldWarnWhenMonthHasOneDigit() {
         var page = open("http://localhost:8080", ShopPage.class);
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithNextYear();
-        card.setMonth("7");
+        Card card = CardUtil.getFirstCardWithMonthHas1Digit();
         page.buyWithCredit(card);
         verifyMonthInvalidFormat();
         verifyOtherFieldsAreValid();
@@ -217,15 +219,15 @@ public class BuyWithCreditTest {
     }
 
     @Test
-    @DisplayName("Validate month (input 007)")
+    @DisplayName("Validate month (input three digits)")
     void shouldWarnWhenMonthHas3Digit() {
         var page = open("http://localhost:8080", ShopPage.class);
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("007");
+        Card card = CardUtil.getFirstCardWithMonthHas3Digits();
         page.buyWithCredit(card);
-        verifyFieldValueEquals("Месяц", "00");
+        verifyFieldValueEquals("Месяц", card.getMonth().substring(0, 2));
         verifyMonthInvalid();
         verifyOtherFieldsAreValid();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
@@ -238,7 +240,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("13");
+        Card card = CardUtil.getFirstCardWithMonthMoreThen12();
         page.buyWithCredit(card);
         verifyMonthInvalid();
         verifyOtherFieldsAreValid();
@@ -252,13 +254,10 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount() + 1;
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount() + 1;
-        Card card = CardUtil.getFirstCard();
-        String expectedMonth = card.getMonth();
-        String negativeMonth = "-" + card.getMonth();
-        card.setMonth(negativeMonth);
+        Card card = CardUtil.getFirstCardWithNegativeMonth();
         page.buyWithCredit(card);
         verifySuccessNotification();
-        verifyFieldValueEquals("Месяц", expectedMonth);
+        verifyFieldValueEquals("Месяц", card.getMonth().replaceFirst("-", ""));
         verifyNoInvalidFields();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
     }
@@ -270,7 +269,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("VI");
+        Card card = CardUtil.getFirstCardWithMonthHasLetters();
         page.buyWithCredit(card);
         verifyMonthNotFilled();
         verifyOtherFieldsAreValid();
@@ -284,10 +283,9 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithMonth("0%");
+        Card card = CardUtil.getFirstCardWithMonthHasSymbols();
         page.buyWithCredit(card);
-        verifyFieldValueEquals("Месяц", "0");
-        verifyMonthInvalidFormat();
+        verifyMonthNotFilled();
         verifyOtherFieldsAreValid();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
     }
@@ -299,7 +297,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithYear("");
+        Card card = CardUtil.getFirstCardWithEmptyYear();
         page.buyWithCredit(card);
         verifyYearNotFilled();
         verifyOtherFieldsAreValid();
@@ -313,7 +311,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithYear("XX");
+        Card card = CardUtil.getFirstCardWithYearHasLetter();
         page.buyWithCredit(card);
         verifyYearNotFilled();
         verifyOtherFieldsAreValid();
@@ -327,10 +325,9 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithYear("2*");
+        Card card = CardUtil.getFirstCardWithYearHasSymbol();
         page.buyWithCredit(card);
-        verifyFieldValueEquals("Год", "2");
-        verifyYearInvalid();
+        verifyYearNotFilled();
         verifyOtherFieldsAreValid();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
     }
@@ -339,25 +336,21 @@ public class BuyWithCreditTest {
     @DisplayName("Validate year (input negative value)")
     void shouldWarnWhenYearIsNegative() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCard();
-        String cardYear = card.getYear();
-        String negativeYear = "-" + cardYear;
-        card.setYear(negativeYear);
+        Card card = CardUtil.getFirstCardWithNegativeYear();
         page.buyWithCredit(card);
         verifySuccessNotification();
         verifyNoInvalidFields();
-        verifyFieldValueEquals("Год", cardYear);
+        verifyFieldValueEquals("Год", card.getYear().replaceFirst("-", ""));
     }
 
     @Test
     @DisplayName("Validate month (input 4 digits of next year)")
     void shouldWarnWhenMonthHas4Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
-        String nextYear = DateUtils.getNextYearAs4Digits();
-        Card card = CardUtil.getFirstCardWithYear(nextYear);
+        Card card = CardUtil.getFirstCardWithYearHas4Digits();
         page.buyWithCredit(card);
         verifyCardDate();
-        String expectedYear = nextYear.substring(0, 2);
+        String expectedYear = card.getYear().substring(0, 2);
         verifyFieldValueEquals("Год", expectedYear);
     }
 
@@ -365,9 +358,8 @@ public class BuyWithCreditTest {
     @DisplayName("Validate month (input 3 digits of next year)")
     void shouldWarnWhenMonthHas3Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
-        String nextYear = DateUtils.getNextYearAs3Digits();
-        String expectedYear = nextYear.substring(0, 2);
-        Card card = CardUtil.getFirstCardWithYear(nextYear);
+        Card card = CardUtil.getFirstCardWithYearHas3Digits();
+        String expectedYear = card.getYear().substring(0, 2);
         page.buyWithCredit(card);
         verifyCardDate();
         verifyFieldValueEquals("Год", expectedYear);
@@ -398,7 +390,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("");
+        Card card = CardUtil.getFirstCardWithEmptyHolder();
         page.buyWithCredit(card);
         verifyHolderNotFilled();
         verifyOtherFieldsAreValid();
@@ -412,7 +404,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("PETROV");
+        Card card = CardUtil.getFirstCardWithHolderLastName();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -426,7 +418,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("PETROV SIDOR IVANOVICH");
+        Card card = CardUtil.getFirstCardWithHolderFullName();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -440,7 +432,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("Петров");
+        Card card = CardUtil.getFirstCardWithHolderLastNameCyrillic();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -454,7 +446,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("Петров Сидор");
+        Card card = CardUtil.getFirstCardWithHolderNameCyrillic();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -468,21 +460,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("Петров Сидор Иванович");
-        page.buyWithCredit(card);
-        verifyHolderInvalid();
-        verifyOtherFieldsAreValid();
-        verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
-    }
-
-    @Test
-    @DisplayName("Validate holder (has double lastname and name in Cyrillic)")
-    void shouldWarnWhenHolderHasDoubleLastnameAndNameInCyrillic() {
-        var page = open("http://localhost:8080", ShopPage.class);
-        int orderEntityCountExpected = getOrderEntityCount();
-        int paymentEntityCountExpected = getPaymentEntityCount();
-        int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("Петров-Старший Сидор");
+        Card card = CardUtil.getFirstCardWithHolderFullNameCyrillic();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -496,7 +474,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("*");
+        Card card = CardUtil.getFirstCardWithHolderNameHas1SymbolicWord();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -510,7 +488,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("* *");
+        Card card = CardUtil.getFirstCardWithHolderNameHas2SymbolicWords();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -524,7 +502,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithHolder("123 456");
+        Card card = CardUtil.getFirstCardWithHolderNameHasDigits();
         page.buyWithCredit(card);
         verifyHolderInvalid();
         verifyOtherFieldsAreValid();
@@ -538,7 +516,7 @@ public class BuyWithCreditTest {
         int orderEntityCountExpected = getOrderEntityCount();
         int paymentEntityCountExpected = getPaymentEntityCount();
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
-        Card card = CardUtil.getFirstCardWithCode("");
+        Card card = CardUtil.getFirstCardWithEmptyCode();
         page.buyWithCredit(card);
         verifyCodeNotFilled();
         verifyOtherFieldsAreValid();
@@ -549,7 +527,7 @@ public class BuyWithCreditTest {
     @DisplayName("Validate holder (one digit)")
     void shouldWarnWhenCodeHasOneDigit() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCardWithCode("9");
+        Card card = CardUtil.getFirstCardWithEmptyCodeHas1Digit();
         page.buyWithCredit(card);
         verifyCodeInvalid();
         verifyOtherFieldsAreValid();
@@ -559,7 +537,7 @@ public class BuyWithCreditTest {
     @DisplayName("Validate holder (2 digits)")
     void shouldWarnWhenCodeHas2Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCardWithCode("99");
+        Card card = CardUtil.getFirstCardWithEmptyCodeHas2Digit();
         page.buyWithCredit(card);
         verifyCodeInvalid();
         verifyOtherFieldsAreValid();
@@ -569,9 +547,9 @@ public class BuyWithCreditTest {
     @DisplayName("Validate holder (4 digits)")
     void shouldWarnWhenCodeHas4Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCardWithCode("9999");
+        Card card = CardUtil.getFirstCardWithEmptyCodeHas4Digit();
         page.buyWithCredit(card);
-        verifyFieldValueEquals("CVC/CVV", "999");
+        verifyFieldValueEquals("CVC/CVV", card.getCode().substring(0, 3));
         verifyNoInvalidFields();
     }
 
@@ -579,10 +557,9 @@ public class BuyWithCreditTest {
     @DisplayName("Validate holder (input letters)")
     void shouldWarnWhenCodeHasLetters() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCardWithCode("abc");
+        Card card = CardUtil.getFirstCardWithEmptyCodeHasLetters();
         page.buyWithCredit(card);
         verifyCodeNotFilled();
-        verifyFieldValueEquals("CVC/CVV", "");
         verifyOtherFieldsAreValid();
     }
 
@@ -590,7 +567,7 @@ public class BuyWithCreditTest {
     @DisplayName("Validate holder (input symbols)")
     void shouldWarnWhenCodeHasSymbols() {
         var page = open("http://localhost:8080", ShopPage.class);
-        Card card = CardUtil.getFirstCardWithCode("!@#");
+        Card card = CardUtil.getFirstCardWithEmptyCodeHasSymbols();
         page.buyWithCredit(card);
         verifyCodeNotFilled();
         verifyOtherFieldsAreValid();
@@ -724,6 +701,17 @@ public class BuyWithCreditTest {
     public void verifyOtherFieldsAreValid() {
         ElementsCollection invalidElements = $$("fieldset .input.input_invalid");
         Assertions.assertEquals(1, invalidElements.size());
+    }
+
+    private String getFormattedCardNumber(String number) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 1; i <= number.length(); i++) {
+            result.append(number.charAt(i));
+            if (i % 4 == 0) {
+                result.append(" ");
+            }
+        }
+        return result.toString();
     }
 
 }

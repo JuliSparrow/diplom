@@ -1,27 +1,23 @@
 package ru.netology.diplom.utils;
 
+import com.github.javafaker.Faker;
+
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class CardUtil {
+    private static final String FIRST_CARD_NUMBER = "4444444444444441";
+    private static final String SECOND_CARD_NUMBER = "4444444444444442";
+    private static final Faker FAKER_EN = new Faker();
+    private static final Faker FAKER_RU = new Faker(new Locale("ru"));
+    private static final String SYMBOLS = " `~!@#$%^&*()_+-=№;:?[]{}/<>\\,.|";
 
     public static Card getFirstCard() {
-        return new Card(
-                "4444444444444441",
-                getNextMonth(),
-                getNextYear(),
-                "PETROV SIDOR",
-                "999"
-        );
+        return getCardWithNumber(FIRST_CARD_NUMBER);
     }
 
     public static Card getSecondCard() {
-        return new Card(
-                "4444444444444442",
-                getNextMonth(),
-                getNextYear(),
-                "PETROV SIDOR",
-                "999"
-        );
+        return getCardWithNumber(SECOND_CARD_NUMBER);
     }
 
     private static String getNextMonth() {
@@ -57,56 +53,233 @@ public class CardUtil {
         return LocalDate.now().plusYears(1);
     }
 
-    public static Card getFirstCardWithNumber(String number) {
-        Card card = getFirstCard();
-        card.setNumber(number);
-        return card;
+    public static Card getCardWithEmptyNumber() {
+        return getCardWithNumber("");
     }
 
-    public static Card getFirstCardWithMonth(String month) {
-        Card card = getFirstCard();
-        card.setMonth(month);
-        return card;
+    public static Card getCardWithNumberLessThen16Digits() {
+        return getCardWithNumber("444444444444444");
     }
 
-    public static Card getFirstCardWithYear(String year) {
-        Card card = getFirstCard();
-        card.setYear(year);
-        return card;
+    public static Card getCardWithNumberMoreThen16Digits() {
+        return getCardWithNumber("11112222333344445");
     }
 
-    public static Card getFirstCardWithHolder(String holder) {
-        Card card = getFirstCard();
-        card.setHolder(holder);
-        return card;
+    public static Card getCardWithNumberHasLetter() {
+        return getCardWithNumber(FAKER_EN.letterify("444444444444444?"));
     }
 
-    public static Card getFirstCardWithCode(String code) {
-        Card card = getFirstCard();
-        card.setCode(code);
-        return card;
+    public static Card getCardWithNumberHasSymbol() {
+        return getCardWithNumber("444444444444444" + getRandomSymbols(1));
+    }
+
+    public static Card getFirstCardWithEmptyMonth() {
+        return getCardWithMonth("");
+    }
+
+    public static Card getFirstCardWithMonthZero() {
+        return getCardWithMonth("0");
+    }
+
+    public static Card getFirstCardWithMonthDoubleZero() {
+        return getCardWithMonth("00");
+    }
+
+    public static Card getFirstCardWithMonthHas1Digit() {
+        return getCardWithMonth(String.valueOf(FAKER_EN.number().numberBetween(1, 9)));
+    }
+
+    public static Card getFirstCardWithMonthHas3Digits() {
+        return getCardWithMonth("007");
+    }
+
+    public static Card getFirstCardWithMonthMoreThen12() {
+        return getCardWithMonth(String.valueOf(FAKER_EN.number().numberBetween(13, 99)));
+    }
+
+    public static Card getFirstCardWithMonthHasLetters() {
+        return getCardWithMonth(FAKER_EN.letterify("??", true));
+    }
+
+    public static Card getFirstCardWithMonthHasSymbols() {
+        return getCardWithMonth(getRandomSymbols(2));
+    }
+
+    public static Card getFirstCardWithNegativeMonth() {
+        return getCardWithMonth("-" + getNextMonth());
+    }
+
+    public static Card getFirstCardWithEmptyYear() {
+        return getCardWithYear("");
+    }
+
+    public static Card getFirstCardWithYearHas3Digits() {
+        return getCardWithYear(DateUtils.getNextYearAs3Digits());
+    }
+
+    public static Card getFirstCardWithYearHas4Digits() {
+        return getCardWithYear(DateUtils.getNextYearAs4Digits());
+    }
+
+    public static Card getFirstCardWithYearHasLetter() {
+        return getCardWithYear(FAKER_EN.letterify("??", true));
+    }
+
+    public static Card getFirstCardWithYearHasSymbol() {
+        return getCardWithYear(getRandomSymbols(2));
+    }
+
+    public static Card getFirstCardWithNegativeYear() {
+        return getCardWithMonth("-" + getNextYear());
+    }
+    
+    private static String getRandomSymbols(int number) {
+        String result = "";
+        for (int i = 0; i < number; i++) {
+            result = result + SYMBOLS.charAt(FAKER_EN.number().numberBetween(0, SYMBOLS.length()));
+        }
+        return result;
+    }
+
+    public static Card getFirstCardWithEmptyHolder() {
+        return getCardWithHolder("");
+    }
+
+    public static Card getFirstCardWithHolderLastName() {
+        return getCardWithHolder(FAKER_EN.name().lastName().toUpperCase(Locale.ENGLISH));
+    }
+
+    public static Card getFirstCardWithHolderLastNameCyrillic() {
+        return getCardWithHolder(FAKER_RU.name().lastName().toUpperCase(new Locale("ru")));
+    }
+
+    public static Card getFirstCardWithHolderFullName() {
+        return getCardWithHolder(FAKER_EN.name().nameWithMiddle().toUpperCase(Locale.ENGLISH));
+    }
+
+    public static Card getFirstCardWithHolderFullNameCyrillic() {
+        return getCardWithHolder(FAKER_RU.name().nameWithMiddle().toUpperCase(new Locale("ru")));
+    }
+
+    public static Card getFirstCardWithHolderNameCyrillic() {
+        return getCardWithHolder(FAKER_RU.name().fullName().toUpperCase(new Locale("ru")));
+    }
+
+    public static Card getFirstCardWithHolderNameHas1SymbolicWord() {
+        return getCardWithHolder(getRandomSymbols(1));
+    }
+
+    public static Card getFirstCardWithHolderNameHas2SymbolicWords() {
+        return getCardWithHolder(getRandomSymbols(1) + " " + getRandomSymbols(1));
+    }
+
+    public static Card getFirstCardWithHolderNameHasDigits() {
+        return getCardWithHolder(FAKER_EN.numerify("### ###"));
+    }
+
+    public static Card getFirstCardWithEmptyCode() {
+        return getCardWithCode("");
+    }
+
+    public static Card getFirstCardWithEmptyCodeHas1Digit() {
+        return getCardWithCode(FAKER_EN.numerify("#"));
+    }
+
+    public static Card getFirstCardWithEmptyCodeHas2Digit() {
+        return getCardWithCode(FAKER_EN.numerify("##"));
+    }
+
+    public static Card getFirstCardWithEmptyCodeHas4Digit() {
+        return getCardWithCode(FAKER_EN.numerify("####"));
+    }
+
+    public static Card getFirstCardWithEmptyCodeHasLetters() {
+        return getCardWithCode(FAKER_EN.letterify("???"));
+    }
+
+    public static Card getFirstCardWithEmptyCodeHasSymbols() {
+        return getCardWithCode(getRandomSymbols(3));
     }
 
     public static Card getFirstCardWithLastMonth() {
         LocalDate lastMonth = getLastMonthDate();
-        Card card = getFirstCard();
-        card.setMonth(getMonth(lastMonth.getMonthValue()));
-        card.setYear(getYear(lastMonth.getYear()));
-        return card;
+        return getCardWithDate(getMonth(lastMonth.getMonthValue()), getYear(lastMonth.getYear()));
     }
 
     public static Card getFirstCardWithLastYear() {
         LocalDate lastMonth = getLastYearDate();
-        Card card = getFirstCard();
-        card.setMonth(getMonth(lastMonth.getMonthValue()));
-        card.setYear(getYear(lastMonth.getYear()));
-        return card;
+        return new Card(
+                FIRST_CARD_NUMBER,
+                getMonth(lastMonth.getMonthValue()),
+                getYear(lastMonth.getYear()),
+                FAKER_EN.name().fullName(),
+                FAKER_EN.number().digits(3)
+        );
     }
 
     public static Card getFirstCardWithNextYear() {
         LocalDate lastMonth = getNextYearDate();
-        Card card = getFirstCard();
-        card.setYear(getYear(lastMonth.getYear()));
-        return card;
+        return getCardWithYear(getYear(lastMonth.getYear()));
     }
+
+    private static Card getCardWithNumber(String number) {
+        return new Card(
+                number,
+                getNextMonth(),
+                getNextYear(),
+                FAKER_EN.name().fullName(),
+                FAKER_EN.number().digits(3)
+        );
+    }
+
+    private static Card getCardWithMonth(String month) {
+        return new Card(
+                FIRST_CARD_NUMBER,
+                month,
+                getNextYear(),
+                FAKER_EN.name().fullName(),
+                FAKER_EN.number().digits(3)
+        );
+    }
+
+    private static Card getCardWithYear(String year) {
+        return new Card(
+                FIRST_CARD_NUMBER,
+                getNextMonth(),
+                year,
+                FAKER_EN.name().fullName(),
+                FAKER_EN.number().digits(3)
+        );
+    }
+
+    private static Card getCardWithDate(String month, String year) {
+        return new Card(
+                FIRST_CARD_NUMBER,
+                month,
+                year,
+                FAKER_EN.name().fullName(),
+                FAKER_EN.number().digits(3)
+        );
+    }
+
+    private static Card getCardWithHolder(String holder) {
+        return new Card(
+                FIRST_CARD_NUMBER,
+                getNextMonth(),
+                getNextYear(),
+                holder,
+                FAKER_EN.number().digits(3)
+        );
+    }
+
+    private static Card getCardWithCode(String code) {
+        return new Card(
+                FIRST_CARD_NUMBER,
+                getNextMonth(),
+                getNextYear(),
+                FAKER_EN.name().fullName(),
+                code
+        );
+    }
+
 }
