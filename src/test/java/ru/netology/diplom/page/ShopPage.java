@@ -1,4 +1,4 @@
-package ru.netology.diplom;
+package ru.netology.diplom.page;
 
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
