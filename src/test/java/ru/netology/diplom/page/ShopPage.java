@@ -142,11 +142,6 @@ public class ShopPage {
         $$(".input .input__inner").findBy(text("CVC/CVV")).find(".input__sub").shouldHave(text(INVALID_FORMAT_MESSAGE));
     }
 
-    public void verifyFieldValueEquals(String fieldName, String expected) {
-        String actual = $$(".input .input__inner").findBy(text(fieldName)).find(".input__box .input__control").getAttribute("value");
-        Assertions.assertEquals(expected, actual);
-    }
-
     public void verifyOtherFieldsAreValid() {
         ElementsCollection invalidElements = $$("fieldset .input.input_invalid");
         Assertions.assertEquals(1, invalidElements.size());

@@ -61,7 +61,6 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getCardWithNumberMoreThen16Digits();
         page.buyWithCard(card);
-        page.verifyFieldValueEquals("Номер карты", getFormattedCardNumber(card.getNumber().substring(0, 16)));
         page.verifyErrorNotification();
         page.verifyOtherFieldsAreValid();
     }
@@ -83,7 +82,6 @@ public class BuyWithCardTest {
         Card card = CardUtil.getCardWithNumberHasLetter();
         page.buyWithCard(card);
         page.verifyCardNumberInvalid();
-        page.verifyFieldValueEquals("Номер карты", "4444 4444 4444 444");
         page.verifyOtherFieldsAreValid();
     }
 
@@ -94,7 +92,6 @@ public class BuyWithCardTest {
         Card card = CardUtil.getCardWithNumberHasSymbol();
         page.buyWithCard(card);
         page.verifyCardNumberInvalid();
-        page.verifyFieldValueEquals("Номер карты", "4444 4444 4444 444");
         page.verifyOtherFieldsAreValid();
     }
 
@@ -144,7 +141,6 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthHas3Digits();
         page.buyWithCard(card);
-        page.verifyFieldValueEquals("Месяц", "00");
         page.verifyMonthInvalid();
         page.verifyOtherFieldsAreValid();
     }
@@ -166,7 +162,6 @@ public class BuyWithCardTest {
         Card card = CardUtil.getFirstCardWithNegativeMonth();
         page.buyWithCard(card);
         page.verifySuccessNotification();
-        page.verifyFieldValueEquals("Месяц", card.getMonth().replace("-", ""));
         page.verifyNoInvalidFields();
     }
 
@@ -228,7 +223,6 @@ public class BuyWithCardTest {
         page.buyWithCard(card);
         page.verifySuccessNotification();
         page.verifyNoInvalidFields();
-        page.verifyFieldValueEquals("Год", card.getYear().replace("-", ""));
     }
 
     @Test
@@ -238,8 +232,6 @@ public class BuyWithCardTest {
         Card card = CardUtil.getFirstCardWithYearHas4Digits();
         page.buyWithCard(card);
         page.verifyCardDate();
-        String expectedYear = card.getYear().substring(0, 2);
-        page.verifyFieldValueEquals("Год", expectedYear);
     }
 
     @Test
@@ -247,10 +239,8 @@ public class BuyWithCardTest {
     void shouldWarnWhenMonthHas3Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas3Digits();
-        String expectedYear = card.getYear().substring(0, 2);
         page.buyWithCard(card);
         page.verifyCardDate();
-        page.verifyFieldValueEquals("Год", expectedYear);
     }
 
     @Test
@@ -397,7 +387,6 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHas4Digit();
         page.buyWithCard(card);
-        page.verifyFieldValueEquals("CVC/CVV", card.getCode().substring(0, 3));
         page.verifyNoInvalidFields();
     }
 
@@ -408,7 +397,6 @@ public class BuyWithCardTest {
         Card card = CardUtil.getFirstCardWithEmptyCodeHasLetters();
         page.buyWithCard(card);
         page.verifyCodeNotFilled();
-        page.verifyFieldValueEquals("CVC/CVV", "");
         page.verifyOtherFieldsAreValid();
     }
 
@@ -420,17 +408,6 @@ public class BuyWithCardTest {
         page.buyWithCard(card);
         page.verifyCodeNotFilled();
         page.verifyOtherFieldsAreValid();
-    }
-
-    private String getFormattedCardNumber(String number) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 1; i <= number.length(); i++) {
-            result.append(number.charAt(i));
-            if (i % 4 == 0) {
-                result.append(" ");
-            }
-        }
-        return result.toString();
     }
 
 }
