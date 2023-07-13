@@ -62,7 +62,7 @@ public class BuyWithCreditTest {
         Card card = CardUtil.getCardWithNumberMoreThen16Digits();
         page.buyWithCredit(card);
         page.verifyErrorNotification();
-        page.verifyOtherFieldsAreValid();
+        page.verifyNoInvalidFields();
     }
 
     @Test
