@@ -100,6 +100,10 @@ public class ShopPage {
         $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(WRONG_CARD_DATE_MESSAGE));
     }
 
+    public void verifyMonthExpired() {
+        $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(CARD_DATE_EXPIRED_MESSAGE));
+    }
+
     public void verifyYearNotFilled() {
         $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(MUST_BE_FILLED_MESSAGE));
     }
@@ -108,22 +112,8 @@ public class ShopPage {
         $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(INVALID_FORMAT_MESSAGE));
     }
 
-    public void verifyCardDate() {
-        String monthValue = $$(".input .input__inner").findBy(text("Месяц")).find("input.input__control").getValue();
-        String yearValue = $$(".input .input__inner").findBy(text("Год")).find("input.input__control").getValue();
-        assert monthValue != null;
-        assert yearValue != null;
-        int month = Integer.parseInt(monthValue);
-        int year = Integer.parseInt(yearValue);
-        int currentYear = DateUtils.getCurrentYear();
-        int currentMonth = DateUtils.getCurrentMonth();
-        if (year < currentYear) {
-            $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(CARD_DATE_EXPIRED_MESSAGE));
-            $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(CARD_DATE_EXPIRED_MESSAGE));
-        }
-        if (year == currentYear && month < currentMonth) {
-            $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(CARD_DATE_EXPIRED_MESSAGE));
-        }
+    public void verifyYearExpired() {
+        $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(CARD_DATE_EXPIRED_MESSAGE));
     }
 
     public void verifyHolderNotFilled() {

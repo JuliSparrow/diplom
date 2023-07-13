@@ -226,39 +226,48 @@ public class BuyWithCreditTest {
     }
 
     @Test
-    @DisplayName("Validate month (input 4 digits of next year)")
-    void shouldWarnWhenMonthHas4Digits() {
+    @DisplayName("Validate year (input 4 digits of next year)")
+    void shouldWarnWhenYearHas4Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas4Digits();
         page.buyWithCredit(card);
-        page.verifyCardDate();
+        page.verifyYearExpired();
     }
 
     @Test
-    @DisplayName("Validate month (input 3 digits of next year)")
-    void shouldWarnWhenMonthHas3Digits() {
+    @DisplayName("Validate year (input 3 digits of next year)")
+    void shouldWarnWhenYearHas3Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas3Digits();
         page.buyWithCredit(card);
-        page.verifyCardDate();
+        page.verifyYearExpired();
     }
 
     @Test
-    @DisplayName("Verify card date (input last month)")
+    @DisplayName("Validate year (input 1 digit of next year)")
+    void shouldWarnWhenYearHas1Digit() {
+        var page = open("http://localhost:8080", ShopPage.class);
+        Card card = CardUtil.getFirstCardWithYearHas1Digit();
+        page.buyWithCredit(card);
+        page.verifyYearInvalid();
+    }
+
+    @Test
+    @DisplayName("Month should expired when input last month")
     void shouldWarnWhenCardDateIsLastMonth() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithLastMonth();
         page.buyWithCredit(card);
-        page.verifyCardDate();
+        page.verifyMonthExpired();
     }
 
     @Test
-    @DisplayName("Verify card date (input last year)")
+    @DisplayName("Year should expired when input last year")
     void shouldWarnWhenCardDateIsLastYear() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithLastYear();
         page.buyWithCredit(card);
-        page.verifyCardDate();
+        page.verifyYearExpired();
     }
 
     @Test

@@ -20,39 +20,6 @@ public class CardUtil {
         return getCardWithNumber(SECOND_CARD_NUMBER);
     }
 
-    private static String getNextMonth() {
-        int nextMonthNumber = getNextMonthDate().getMonth().getValue();
-        return getMonth(nextMonthNumber);
-    }
-
-    private static String getMonth(int month) {
-        return String.format("%02d", month);
-    }
-
-    private static String getNextYear() {
-        int nextYear = getNextMonthDate().getYear();
-        return getYear(nextYear);
-    }
-
-    private static String getYear(int year) {
-        return String.valueOf(year).substring(2);
-    }
-
-    private static LocalDate getNextMonthDate() {
-        return LocalDate.now().plusMonths(1);
-    }
-
-    private static LocalDate getLastMonthDate() {
-        return LocalDate.now().minusMonths(1);
-    }
-
-    private static LocalDate getLastYearDate() {
-        return LocalDate.now().minusYears(1);
-    }
-    private static LocalDate getNextYearDate() {
-        return LocalDate.now().plusYears(1);
-    }
-
     public static Card getCardWithEmptyNumber() {
         return getCardWithNumber("");
     }
@@ -106,11 +73,15 @@ public class CardUtil {
     }
 
     public static Card getFirstCardWithNegativeMonth() {
-        return getCardWithMonth("-" + getNextMonth());
+        return getCardWithMonth("-" + DateUtils.getNextMonth());
     }
 
     public static Card getFirstCardWithEmptyYear() {
         return getCardWithYear("");
+    }
+
+    public static Card getFirstCardWithYearHas1Digit() {
+        return getCardWithYear(FAKER_EN.number().digit());
     }
 
     public static Card getFirstCardWithYearHas3Digits() {
@@ -130,7 +101,7 @@ public class CardUtil {
     }
 
     public static Card getFirstCardWithNegativeYear() {
-        return getCardWithMonth("-" + getNextYear());
+        return getCardWithMonth("-" + DateUtils.getNextYear());
     }
     
     private static String getRandomSymbols(int number) {
@@ -202,31 +173,26 @@ public class CardUtil {
     }
 
     public static Card getFirstCardWithLastMonth() {
-        LocalDate lastMonth = getLastMonthDate();
-        return getCardWithDate(getMonth(lastMonth.getMonthValue()), getYear(lastMonth.getYear()));
+        LocalDate lastMonth = DateUtils.getLastMonthDate();
+        return getCardWithDate(DateUtils.getMonth(lastMonth.getMonthValue()), DateUtils.getYear(lastMonth.getYear()));
     }
 
     public static Card getFirstCardWithLastYear() {
-        LocalDate lastMonth = getLastYearDate();
+        LocalDate lastMonth = DateUtils.getLastYearDate();
         return new Card(
                 FIRST_CARD_NUMBER,
-                getMonth(lastMonth.getMonthValue()),
-                getYear(lastMonth.getYear()),
+                DateUtils.getMonth(lastMonth.getMonthValue()),
+                DateUtils.getYear(lastMonth.getYear()),
                 FAKER_EN.name().fullName(),
                 FAKER_EN.number().digits(3)
         );
     }
 
-    public static Card getFirstCardWithNextYear() {
-        LocalDate lastMonth = getNextYearDate();
-        return getCardWithYear(getYear(lastMonth.getYear()));
-    }
-
     private static Card getCardWithNumber(String number) {
         return new Card(
                 number,
-                getNextMonth(),
-                getNextYear(),
+                DateUtils.getNextMonth(),
+                DateUtils.getNextYear(),
                 FAKER_EN.name().fullName(),
                 FAKER_EN.number().digits(3)
         );
@@ -236,7 +202,7 @@ public class CardUtil {
         return new Card(
                 FIRST_CARD_NUMBER,
                 month,
-                getNextYear(),
+                DateUtils.getNextYear(),
                 FAKER_EN.name().fullName(),
                 FAKER_EN.number().digits(3)
         );
@@ -245,7 +211,7 @@ public class CardUtil {
     private static Card getCardWithYear(String year) {
         return new Card(
                 FIRST_CARD_NUMBER,
-                getNextMonth(),
+                DateUtils.getNextMonth(),
                 year,
                 FAKER_EN.name().fullName(),
                 FAKER_EN.number().digits(3)
@@ -265,8 +231,8 @@ public class CardUtil {
     private static Card getCardWithHolder(String holder) {
         return new Card(
                 FIRST_CARD_NUMBER,
-                getNextMonth(),
-                getNextYear(),
+                DateUtils.getNextMonth(),
+                DateUtils.getNextYear(),
                 holder,
                 FAKER_EN.number().digits(3)
         );
@@ -275,8 +241,8 @@ public class CardUtil {
     private static Card getCardWithCode(String code) {
         return new Card(
                 FIRST_CARD_NUMBER,
-                getNextMonth(),
-                getNextYear(),
+                DateUtils.getNextMonth(),
+                DateUtils.getNextYear(),
                 FAKER_EN.name().fullName(),
                 code
         );
