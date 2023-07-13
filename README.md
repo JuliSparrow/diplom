@@ -1,3 +1,6 @@
+## Тестирование приложения "aqa-shop"
+[План тестирования](docs/Plan.md)
+
 ## Порядок запуска автотестов
 Перед запуском тестов необходимо установить следующее ПО:
 - Java 11 или выше;
@@ -6,19 +9,21 @@
 
 Команды выполняются в терминале в корневой директории проекта.
 ### Подготовка окружения
-1. Запустить базы данных и gate-simulator командой `docker-compose up -d`. 
+1. Запустить приложение Docker.
+2. Запустить базы данных и gate-simulator командой `docker-compose up -d`. 
 Первый запуск может занять продолжительное время. Необходимо подождать, когда статус контейнеров postgres, mysql и node-app станет "Started"
-2. Запустить SUT:
+3. Запустить SUT:
     - для проверки БД mysql: `java -jar .\artifacts\aqa-shop.jar`
     - для проверки БД postgres: `java "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app" -jar .\artifacts\aqa-shop.jar`
 
 ### Запуск тестов
-Выполнить команду:
+В новом окне терминала выполнить команду:
 - для проверки БД mysql: `.\gradlew clean test`
 - для проверки БД postgres: `.\gradlew clean test "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app"`
 
 ### Получение отчёта о тестировании
-Выполнить команду: `.\gradlew allureServe`
+1. Выполнить команду: `.\gradlew allureServe`
+2. Открыть отчёт в браузере: [build/reports/allure-report/allureReport/index.html](build/reports/allure-report/allureReport/index.html)
 
 ### Завершение работы
 1. Завершить работу SUT. Для этого в терминале нажать Ctrl+C
