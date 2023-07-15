@@ -3,7 +3,7 @@
 
 ## Порядок запуска автотестов
 Перед запуском тестов необходимо установить следующее ПО:
-- Java 11 или выше;
+- Java 11;
 - IntelliJ Idea
 - Docker
 
@@ -18,12 +18,11 @@
 
 ### Запуск тестов
 В новом окне терминала выполнить команду:
-- для проверки БД mysql: `.\gradlew clean test`
+- для проверки БД mysql: `.\gradlew clean test "-Dspring.datasource.url=jdbc:mysql://localhost:5432/app"`
 - для проверки БД postgres: `.\gradlew clean test "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app"`
 
 ### Получение отчёта о тестировании
-1. Выполнить команду: `.\gradlew allureServe`
-2. Открыть отчёт в браузере: [build/reports/allure-report/allureReport/index.html](build/reports/allure-report/allureReport/index.html)
+1. Выполнить команду: `.\gradlew allureServe`. Отчёт откроется в браузере по умолчанию.
 
 ### Завершение работы
 1. Завершить работу SUT. Для этого в терминале нажать Ctrl+C

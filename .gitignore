@@ -45,3 +45,4 @@ bin/
 gate-simulator/.idea
 gate-simulator/node_modules
 data
+/.allure/

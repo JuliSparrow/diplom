@@ -14,6 +14,10 @@ import ru.netology.diplom.utils.CardUtil;
 import static com.codeborne.selenide.Selenide.open;
 
 public class BuyWithCardTest {
+    private static final String MUST_BE_FILLED_MESSAGE = "Поле обязательно для заполнения";
+    private static final String INVALID_FORMAT_MESSAGE = "Неверный формат";
+    private static final String CARD_DATE_EXPIRED_MESSAGE = "Истёк срок действия карты";
+    private static final String WRONG_CARD_DATE_MESSAGE = "Неверно указан срок действия карты";
 
     @BeforeAll
     public static void setupAll() {
@@ -51,7 +55,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getCardWithEmptyNumber();
         page.buyWithCard(card);
-        page.verifyCardNumberNotFilled();
+        page.verifyCardNumberInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -71,7 +75,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getCardWithNumberLessThen16Digits();
         page.buyWithCard(card);
-        page.verifyCardNumberInvalid();
+        page.verifyCardNumberInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -81,7 +85,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getCardWithNumberHasLetter();
         page.buyWithCard(card);
-        page.verifyCardNumberInvalid();
+        page.verifyCardNumberInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -91,7 +95,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getCardWithNumberHasSymbol();
         page.buyWithCard(card);
-        page.verifyCardNumberInvalid();
+        page.verifyCardNumberInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -101,7 +105,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyMonth();
         page.buyWithCard(card);
-        page.verifyMonthNotFilled();
+        page.verifyMonthInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -111,7 +115,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthZero();
         page.buyWithCard(card);
-        page.verifyMonthInvalidFormat();
+        page.verifyMonthInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -121,7 +125,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthDoubleZero();
         page.buyWithCard(card);
-        page.verifyMonthInvalid();
+        page.verifyMonthInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -131,7 +135,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthHas1Digit();
         page.buyWithCard(card);
-        page.verifyMonthInvalidFormat();
+        page.verifyMonthInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -141,7 +145,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthHas3Digits();
         page.buyWithCard(card);
-        page.verifyMonthInvalid();
+        page.verifyMonthInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -151,7 +155,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthMoreThen12();
         page.buyWithCard(card);
-        page.verifyMonthInvalid();
+        page.verifyMonthInvalid(WRONG_CARD_DATE_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -171,7 +175,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthHasLetters();
         page.buyWithCard(card);
-        page.verifyMonthNotFilled();
+        page.verifyMonthInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -181,7 +185,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithMonthHasSymbols();
         page.buyWithCard(card);
-        page.verifyMonthNotFilled();
+        page.verifyMonthInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -191,7 +195,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyYear();
         page.buyWithCard(card);
-        page.verifyYearNotFilled();
+        page.verifyYearInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -201,7 +205,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHasLetter();
         page.buyWithCard(card);
-        page.verifyYearNotFilled();
+        page.verifyYearInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -211,7 +215,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHasSymbol();
         page.buyWithCard(card);
-        page.verifyYearNotFilled();
+        page.verifyYearInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -231,7 +235,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas4Digits();
         page.buyWithCard(card);
-        page.verifyYearExpired();
+        page.verifyYearInvalid(CARD_DATE_EXPIRED_MESSAGE);
     }
 
     @Test
@@ -240,7 +244,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas3Digits();
         page.buyWithCard(card);
-        page.verifyYearExpired();
+        page.verifyYearInvalid(CARD_DATE_EXPIRED_MESSAGE);
     }
 
     @Test
@@ -249,7 +253,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithYearHas1Digit();
         page.buyWithCard(card);
-        page.verifyYearInvalid();
+        page.verifyYearInvalid(INVALID_FORMAT_MESSAGE);
     }
 
     @Test
@@ -258,7 +262,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithLastMonth();
         page.buyWithCard(card);
-        page.verifyMonthExpired();
+        page.verifyMonthInvalid(CARD_DATE_EXPIRED_MESSAGE);
     }
 
     @Test
@@ -267,7 +271,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithLastYear();
         page.buyWithCard(card);
-        page.verifyYearExpired();
+        page.verifyYearInvalid(CARD_DATE_EXPIRED_MESSAGE);
     }
 
     @Test
@@ -276,7 +280,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyHolder();
         page.buyWithCard(card);
-        page.verifyHolderNotFilled();
+        page.verifyHolderInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -286,7 +290,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderLastName();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -296,7 +300,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderFullName();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -306,7 +310,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderLastNameCyrillic();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -316,7 +320,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderNameCyrillic();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -326,7 +330,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderFullNameCyrillic();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -336,7 +340,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderNameHas1SymbolicWord();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -346,7 +350,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderNameHas2SymbolicWords();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -356,7 +360,7 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithHolderNameHasDigits();
         page.buyWithCard(card);
-        page.verifyHolderInvalid();
+        page.verifyHolderInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
@@ -366,32 +370,32 @@ public class BuyWithCardTest {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCode();
         page.buyWithCard(card);
-        page.verifyCodeNotFilled();
+        page.verifyCodeInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
     @Test
-    @DisplayName("Validate holder (one digit)")
+    @DisplayName("Validate code (one digit)")
     void shouldWarnWhenCodeHasOneDigit() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHas1Digit();
         page.buyWithCard(card);
-        page.verifyCodeInvalid();
+        page.verifyCodeInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
     @Test
-    @DisplayName("Validate holder (2 digits)")
+    @DisplayName("Validate code (2 digits)")
     void shouldWarnWhenCodeHas2Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHas2Digit();
         page.buyWithCard(card);
-        page.verifyCodeInvalid();
+        page.verifyCodeInvalid(INVALID_FORMAT_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
     @Test
-    @DisplayName("Validate holder (4 digits)")
+    @DisplayName("Validate code (4 digits)")
     void shouldWarnWhenCodeHas4Digits() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHas4Digit();
@@ -400,22 +404,22 @@ public class BuyWithCardTest {
     }
 
     @Test
-    @DisplayName("Validate holder (input letters)")
+    @DisplayName("Validate code (input letters)")
     void shouldWarnWhenCodeHasLetters() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHasLetters();
         page.buyWithCard(card);
-        page.verifyCodeNotFilled();
+        page.verifyCodeInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 
     @Test
-    @DisplayName("Validate holder (input symbols)")
+    @DisplayName("Validate code (input symbols)")
     void shouldWarnWhenCodeHasSymbols() {
         var page = open("http://localhost:8080", ShopPage.class);
         Card card = CardUtil.getFirstCardWithEmptyCodeHasSymbols();
         page.buyWithCard(card);
-        page.verifyCodeNotFilled();
+        page.verifyCodeInvalid(MUST_BE_FILLED_MESSAGE);
         page.verifyOtherFieldsAreValid();
     }
 

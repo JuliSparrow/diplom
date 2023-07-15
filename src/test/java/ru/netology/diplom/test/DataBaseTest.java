@@ -12,7 +12,8 @@ import static com.codeborne.selenide.Selenide.open;
 import static ru.netology.diplom.utils.DBUtils.*;
 
 public class DataBaseTest {
-    
+    private static final String INVALID_FORMAT_MESSAGE = "Неверный формат";
+
     @BeforeAll
     public static void setupAll() {
         initConnection();
@@ -34,6 +35,7 @@ public class DataBaseTest {
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
         Card card = CardUtil.getFirstCard();
         page.buyWithCard(card);
+        page.verifySuccessNotification();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
         String expectedStatus = "APPROVED";
         String actualStatus = getPaymentEntityStatus();
@@ -49,6 +51,7 @@ public class DataBaseTest {
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
         Card card = CardUtil.getSecondCard();
         page.buyWithCard(card);
+        page.verifyErrorNotification();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
         String expectedStatus = "DECLINED";
         String actualStatus = getPaymentEntityStatus();
@@ -64,6 +67,7 @@ public class DataBaseTest {
         int creditRequestEntityCountExpected = getCreditRequestEntityCount() + 1;
         Card card = CardUtil.getFirstCard();
         page.buyWithCredit(card);
+        page.verifySuccessNotification();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
         String expectedStatus = "APPROVED";
         String actualStatus = getCreditRequestEntityStatus();
@@ -79,6 +83,7 @@ public class DataBaseTest {
         int creditRequestEntityCountExpected = getCreditRequestEntityCount() + 1;
         Card card = CardUtil.getSecondCard();
         page.buyWithCredit(card);
+        page.verifyErrorNotification();
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
         String expectedStatus = "DECLINED";
         String actualStatus = getCreditRequestEntityStatus();
@@ -94,6 +99,7 @@ public class DataBaseTest {
         int creditRequestEntityCountExpected = getCreditRequestEntityCount();
         Card card = CardUtil.getCardWithNumberLessThen16Digits();
         page.buyWithCard(card);
+        page.verifyCardNumberInvalid(INVALID_FORMAT_MESSAGE);
         verifyDataBase(orderEntityCountExpected, paymentEntityCountExpected, creditRequestEntityCountExpected);
     }
 
