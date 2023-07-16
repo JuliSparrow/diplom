@@ -18,7 +18,7 @@
 
 ### Запуск тестов
 В новом окне терминала выполнить команду:
-- для проверки БД mysql: `.\gradlew clean test "-Dspring.datasource.url=jdbc:mysql://localhost:5432/app"`
+- для проверки БД mysql: `.\gradlew clean test "-Dspring.datasource.url=jdbc:mysql://localhost:3306/app"`
 - для проверки БД postgres: `.\gradlew clean test "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app"`
 
 ### Получение отчёта о тестировании
