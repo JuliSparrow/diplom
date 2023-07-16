@@ -30,6 +30,11 @@ public class DateUtils {
         return getYear(nextYear);
     }
 
+    public static String getYearOfNextMonth() {
+        int nextYear = getNextMonthDate().getYear();
+        return getYear(nextYear);
+    }
+
     public static String getYear(int year) {
         return String.valueOf(year).substring(2);
     }

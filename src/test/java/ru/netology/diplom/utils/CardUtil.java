@@ -101,7 +101,7 @@ public class CardUtil {
     }
 
     public static Card getFirstCardWithNegativeYear() {
-        return getCardWithMonth("-" + DateUtils.getNextYear());
+        return getCardWithYear("-" + DateUtils.getYearOfNextMonth());
     }
     
     private static String getRandomSymbols(int number) {
