@@ -1,5 +1,6 @@
 package ru.netology.diplom.page;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
@@ -8,8 +9,9 @@ import ru.netology.diplom.utils.Card;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.CollectionCondition.empty;
+import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
@@ -64,7 +66,7 @@ public class ShopPage {
     }
 
     public void verifyNoInvalidFields() {
-        Assertions.assertTrue($$("fieldset .input.input_invalid").isEmpty());
+        $$("fieldset .input.input_invalid").shouldBe(empty, Duration.ofSeconds(5));
     }
 
     public void verifySuccessNotification() {
@@ -76,28 +78,26 @@ public class ShopPage {
     }
 
     public void verifyCardNumberInvalid(String expectedMessage) {
-        $$(".input .input__inner").findBy(text("Номер карты")).find(".input__sub").shouldHave(text(expectedMessage));
+        $$(".input .input__inner").findBy(text("Номер карты")).find(".input__sub").shouldHave(text(expectedMessage), Duration.ofSeconds(15));
     }
 
     public void verifyMonthInvalid(String expectedMessage) {
-        $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(expectedMessage));
+        $$(".input .input__inner").findBy(text("Месяц")).find(".input__sub").shouldHave(text(expectedMessage), Duration.ofSeconds(15));
     }
 
     public void verifyYearInvalid(String expectedMessage) {
-        $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(expectedMessage));
+        $$(".input .input__inner").findBy(text("Год")).find(".input__sub").shouldHave(text(expectedMessage), Duration.ofSeconds(15));
     }
 
     public void verifyHolderInvalid(String expectedMessage) {
-        $$(".input .input__inner").findBy(text("Владелец")).find(".input__sub").shouldHave(text(expectedMessage));
+        $$(".input .input__inner").findBy(text("Владелец")).find(".input__sub").shouldHave(text(expectedMessage), Duration.ofSeconds(15));
     }
 
     public void verifyCodeInvalid(String expectedMessage) {
-        $$(".input .input__inner").findBy(text("CVC/CVV")).find(".input__sub").shouldHave(text(expectedMessage));
+        $$(".input .input__inner").findBy(text("CVC/CVV")).find(".input__sub").shouldHave(text(expectedMessage), Duration.ofSeconds(15));
     }
 
     public void verifyOtherFieldsAreValid() {
-        ElementsCollection invalidElements = $$("fieldset .input.input_invalid");
-        Assertions.assertEquals(1, invalidElements.size());
+        $$("fieldset .input.input_invalid").shouldHave(size(1), Duration.ofSeconds(15));
     }
-
 }
